@@ -1,0 +1,5 @@
+C:\Users\student\source\repos\Example\Example.Model.Common\bin\Debug\Example.Model.Common.dll
+C:\Users\student\source\repos\Example\Example.Model.Common\bin\Debug\Example.Model.Common.pdb
+C:\Users\student\source\repos\Example\Example.Model.Common\obj\Debug\Example.Model.Common.csproj.CoreCompileInputs.cache
+C:\Users\student\source\repos\Example\Example.Model.Common\obj\Debug\Example.Model.Common.dll
+C:\Users\student\source\repos\Example\Example.Model.Common\obj\Debug\Example.Model.Common.pdb

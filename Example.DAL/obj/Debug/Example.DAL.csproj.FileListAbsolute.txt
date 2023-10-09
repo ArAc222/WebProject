@@ -1,0 +1,5 @@
+C:\Users\student\source\repos\Example\Example.DAL\bin\Debug\Example.DAL.dll
+C:\Users\student\source\repos\Example\Example.DAL\bin\Debug\Example.DAL.pdb
+C:\Users\student\source\repos\Example\Example.DAL\obj\Debug\Example.DAL.csproj.CoreCompileInputs.cache
+C:\Users\student\source\repos\Example\Example.DAL\obj\Debug\Example.DAL.dll
+C:\Users\student\source\repos\Example\Example.DAL\obj\Debug\Example.DAL.pdb

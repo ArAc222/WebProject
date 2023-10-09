@@ -1,0 +1,6 @@
+C:\Users\student\source\repos\Example\Example.Service\bin\Debug\Example.Service.dll
+C:\Users\student\source\repos\Example\Example.Service\bin\Debug\Example.Service.pdb
+C:\Users\student\source\repos\Example\Example.Service\obj\Debug\Example.Service.csproj.AssemblyReference.cache
+C:\Users\student\source\repos\Example\Example.Service\obj\Debug\Example.Service.csproj.CoreCompileInputs.cache
+C:\Users\student\source\repos\Example\Example.Service\obj\Debug\Example.Service.dll
+C:\Users\student\source\repos\Example\Example.Service\obj\Debug\Example.Service.pdb

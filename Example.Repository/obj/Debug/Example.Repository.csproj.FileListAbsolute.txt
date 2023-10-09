@@ -1,0 +1,6 @@
+C:\Users\student\source\repos\Example\Example.Repository\bin\Debug\Example.Repository.dll
+C:\Users\student\source\repos\Example\Example.Repository\bin\Debug\Example.Repository.pdb
+C:\Users\student\source\repos\Example\Example.Repository\obj\Debug\Example.Repository.csproj.AssemblyReference.cache
+C:\Users\student\source\repos\Example\Example.Repository\obj\Debug\Example.Repository.csproj.CoreCompileInputs.cache
+C:\Users\student\source\repos\Example\Example.Repository\obj\Debug\Example.Repository.dll
+C:\Users\student\source\repos\Example\Example.Repository\obj\Debug\Example.Repository.pdb
