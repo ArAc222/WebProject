@@ -1,4 +1,6 @@
-﻿using Example.WebApi.Models;
+﻿// JobController
+
+using Example.WebApi.Models;
 using Npgsql;
 using System;
 using System.Collections.Generic;
@@ -14,9 +16,7 @@ namespace Example.WebApi.Controllers
 
         public JobController()
         {
-            string connectionString = "Host=localhost;Port=5432;Username=postgres;Password=student1;Database=workerDB";
-            connection = new NpgsqlConnection(connectionString);
-            connection.Open();
+
         }
 
         // GET api/job
@@ -24,23 +24,27 @@ namespace Example.WebApi.Controllers
         {
             try
             {
-                using (NpgsqlCommand command = new NpgsqlCommand("SELECT * FROM \"Job\";", connection))
+                using (NpgsqlConnection connection = new NpgsqlConnection("Host=localhost;Port=5432;Username=postgres;Password=student1;Database=workerDB"))
                 {
-                    using (NpgsqlDataReader reader = command.ExecuteReader())
+                    connection.Open();
+
+                    using (NpgsqlCommand command = new NpgsqlCommand("SELECT * FROM \"JobModel\";", connection))
                     {
-                        List<Job> jobsList = new List<Job>();
-                        while (reader.Read())
+                        using (NpgsqlDataReader reader = command.ExecuteReader())
                         {
-                            Job job = new Job
+                            List<Job> jobsList = new List<Job>();
+                            while (reader.Read())
                             {
-                                Id = reader.GetGuid(0),
-                                Name = reader.GetString(1),
-                                Salary = reader.GetInt32(2),
-                                Type = reader.GetString(3)
-                            };
-                            jobsList.Add(job);
+                                Job job = new Job
+                                {
+                                    Id = reader.GetGuid(0),
+                                    Salary = reader.GetInt32(2),
+                                    Type = reader.GetString(3)
+                                };
+                                jobsList.Add(job);
+                            }
+                            return Request.CreateResponse(HttpStatusCode.OK, jobsList);
                         }
-                        return Request.CreateResponse(HttpStatusCode.OK, jobsList);
                     }
                 }
             }
@@ -55,26 +59,30 @@ namespace Example.WebApi.Controllers
         {
             try
             {
-                using (NpgsqlCommand command = new NpgsqlCommand("SELECT * FROM \"Job\" WHERE \"Id\" = @id", connection))
+                using (NpgsqlConnection connection = new NpgsqlConnection("Host=localhost;Port=5432;Username=postgres;Password=student1;Database=workerDB"))
                 {
-                    command.Parameters.AddWithValue("@id", id);
+                    connection.Open();
 
-                    using (NpgsqlDataReader reader = command.ExecuteReader())
+                    using (NpgsqlCommand command = new NpgsqlCommand("SELECT * FROM \"Job\" WHERE \"Id\" = @id", connection))
                     {
-                        if (reader.Read())
+                        command.Parameters.AddWithValue("@id", id);
+
+                        using (NpgsqlDataReader reader = command.ExecuteReader())
                         {
-                            Job job = new Job
+                            if (reader.Read())
                             {
-                                Id = reader.GetGuid(0),
-                                Name = reader.GetString(1),
-                                Salary = reader.GetInt32(2),
-                                Type = reader.GetString(3)
-                            };
-                            return Request.CreateResponse(HttpStatusCode.OK, job);
-                        }
-                        else
-                        {
-                            return Request.CreateResponse(HttpStatusCode.NotFound, "Job not found");
+                                Job job = new Job
+                                {
+                                    Id = reader.GetGuid(0),
+                                    Salary = reader.GetInt32(2),
+                                    Type = reader.GetString(3)
+                                };
+                                return Request.CreateResponse(HttpStatusCode.OK, job);
+                            }
+                            else
+                            {
+                                return Request.CreateResponse(HttpStatusCode.NotFound, "Job not found");
+                            }
                         }
                     }
                 }
@@ -91,22 +99,26 @@ namespace Example.WebApi.Controllers
             try
             {
                 job.Id = Guid.NewGuid();
-                using (NpgsqlCommand command = new NpgsqlCommand("INSERT INTO \"Job\" (\"Id\", \"Name\", \"Salary\", \"Type\") VALUES (@Id, @Name, @Salary, @Type)", connection))
+                using (NpgsqlConnection connection = new NpgsqlConnection("Host=localhost;Port=5432;Username=postgres;Password=student1;Database=workerDB"))
                 {
-                    command.Parameters.AddWithValue("@Id", job.Id);
-                    command.Parameters.AddWithValue("@Name", job.Name);
-                    command.Parameters.AddWithValue("@Salary", job.Salary);
-                    command.Parameters.AddWithValue("@Type", job.Type);
+                    connection.Open();
 
-                    int result = command.ExecuteNonQuery();
+                    using (NpgsqlCommand command = new NpgsqlCommand("INSERT INTO \"Job\" (\"Id\", \"Salary\", \"Type\") VALUES (@Id, @Name, @Salary, @Type)", connection))
+                    {
+                        command.Parameters.AddWithValue("@Id", job.Id);
+                        command.Parameters.AddWithValue("@Salary", job.Salary);
+                        command.Parameters.AddWithValue("@Type", job.Type);
 
-                    if (result > 0)
-                    {
-                        return Request.CreateResponse(HttpStatusCode.OK, job);
-                    }
-                    else
-                    {
-                        return Request.CreateResponse(HttpStatusCode.BadRequest, "Error inserting job");
+                        int result = command.ExecuteNonQuery();
+
+                        if (result > 0)
+                        {
+                            return Request.CreateResponse(HttpStatusCode.OK, job);
+                        }
+                        else
+                        {
+                            return Request.CreateResponse(HttpStatusCode.BadRequest, "Error inserting job");
+                        }
                     }
                 }
             }
@@ -121,22 +133,45 @@ namespace Example.WebApi.Controllers
         {
             try
             {
-                using (NpgsqlCommand command = new NpgsqlCommand("UPDATE \"Job\" SET \"Name\" = @Name, \"Salary\" = @Salary, \"Type\" = @Type WHERE \"Id\" = @id", connection))
+                using (NpgsqlConnection connection = new NpgsqlConnection("Host=localhost;Port=5432;Username=postgres;Password=student1;Database=workerDB"))
                 {
-                    command.Parameters.AddWithValue("@Name", job.Name);
-                    command.Parameters.AddWithValue("@Salary", job.Salary);
-                    command.Parameters.AddWithValue("@Type", job.Type);
-                    command.Parameters.AddWithValue("@id", id);
+                    connection.Open();
 
-                    int rowsAffected = command.ExecuteNonQuery();
-
-                    if (rowsAffected > 0)
+                    using (NpgsqlCommand getCommand = new NpgsqlCommand("SELECT * FROM \"Job\" WHERE \"Id\" = @id", connection))
                     {
-                        return Request.CreateResponse(HttpStatusCode.OK, true);
+                        getCommand.Parameters.AddWithValue("@id", id);
+
+                        using (NpgsqlDataReader reader = getCommand.ExecuteReader())
+                        {
+                            if (reader.Read())
+                            {
+                                // Ažuriram promijenjena polja
+                                job.Salary = reader.GetInt32(2);
+                                job.Type = reader.GetString(3);
+                            }
+                            else
+                            {
+                                return Request.CreateResponse(HttpStatusCode.NotFound, "Job not found");
+                            }
+                        }
                     }
-                    else
+
+                    using (NpgsqlCommand updateCommand = new NpgsqlCommand("UPDATE \"Job\" SET \"Name\" = @Name, \"Salary\" = @Salary, \"Type\" = @Type WHERE \"Id\" = @id", connection))
                     {
-                        return Request.CreateResponse(HttpStatusCode.NotFound, "Job not found");
+                        updateCommand.Parameters.AddWithValue("@id", job.Id);
+                        updateCommand.Parameters.AddWithValue("@Salary", job.Salary);
+                        updateCommand.Parameters.AddWithValue("@Type", job.Type);
+
+                        int rowsAffected = updateCommand.ExecuteNonQuery();
+
+                        if (rowsAffected > 0)
+                        {
+                            return Request.CreateResponse(HttpStatusCode.OK, true);
+                        }
+                        else
+                        {
+                            return Request.CreateResponse(HttpStatusCode.NotFound, "Job not found");
+                        }
                     }
                 }
             }
@@ -151,19 +186,24 @@ namespace Example.WebApi.Controllers
         {
             try
             {
-                using (NpgsqlCommand command = new NpgsqlCommand("DELETE FROM \"Job\" WHERE \"Id\" = @id", connection))
+                using (NpgsqlConnection connection = new NpgsqlConnection("Host=localhost;Port=5432;Username=postgres;Password=student1;Database=workerDB"))
                 {
-                    command.Parameters.AddWithValue("@id", id);
+                    connection.Open();
 
-                    int rowsAffected = command.ExecuteNonQuery();
+                    using (NpgsqlCommand command = new NpgsqlCommand("DELETE FROM \"Job\" WHERE \"Id\" = @id", connection))
+                    {
+                        command.Parameters.AddWithValue("@id", id);
 
-                    if (rowsAffected > 0)
-                    {
-                        return Request.CreateResponse(HttpStatusCode.OK, true);
-                    }
-                    else
-                    {
-                        return Request.CreateResponse(HttpStatusCode.NotFound, "Job not found");
+                        int rowsAffected = command.ExecuteNonQuery();
+
+                        if (rowsAffected > 0)
+                        {
+                            return Request.CreateResponse(HttpStatusCode.OK, true);
+                        }
+                        else
+                        {
+                            return Request.CreateResponse(HttpStatusCode.NotFound, "Job not found");
+                        }
                     }
                 }
             }
@@ -171,19 +211,6 @@ namespace Example.WebApi.Controllers
             {
                 return Request.CreateResponse(HttpStatusCode.InternalServerError, ex.Message);
             }
-        }
-
-        protected override void Dispose(bool disposing)
-        {
-            if (disposing)
-            {
-                if (connection != null)
-                {
-                    connection.Close();
-                    connection.Dispose();
-                }
-            }
-            base.Dispose(disposing);
         }
 
         // GET api/job/workers/5
@@ -192,26 +219,31 @@ namespace Example.WebApi.Controllers
         {
             try
             {
-                using (NpgsqlCommand command = new NpgsqlCommand("SELECT * FROM \"Worker\" WHERE \"JobId\" = @JobId", connection))
+                using (NpgsqlConnection connection = new NpgsqlConnection("Host=localhost;Port=5432;Username=postgres;Password=student1;Database=workerDB"))
                 {
-                    command.Parameters.AddWithValue("@JobId", jobId);
+                    connection.Open();
 
-                    using (NpgsqlDataReader reader = command.ExecuteReader())
+                    using (NpgsqlCommand command = new NpgsqlCommand("SELECT * FROM \"Worker\" WHERE \"JobId\" = @JobId", connection))
                     {
-                        List<Worker> workersList = new List<Worker>();
-                        while (reader.Read())
+                        command.Parameters.AddWithValue("@JobId", jobId);
+
+                        using (NpgsqlDataReader reader = command.ExecuteReader())
                         {
-                            Worker worker = new Worker
+                            List<Worker> workersList = new List<Worker>();
+                            while (reader.Read())
                             {
-                                Id = reader.GetGuid(0),
-                                FirstName = reader.GetString(1),
-                                LastName = reader.GetString(2),
-                                Gender = reader.GetChar(3),
-                                JobId = reader.GetGuid(4) // Dodajte JobId za povezivanje s poslom
-                            };
-                            workersList.Add(worker);
+                                Worker worker = new Worker
+                                {
+                                    Id = reader.GetGuid(0),
+                                    FirstName = reader.GetString(1),
+                                    LastName = reader.GetString(2),
+                                    Gender = reader.GetChar(3),
+                                    JobId = reader.GetGuid(4)
+                                };
+                                workersList.Add(worker);
+                            }
+                            return Request.CreateResponse(HttpStatusCode.OK, workersList);
                         }
-                        return Request.CreateResponse(HttpStatusCode.OK, workersList);
                     }
                 }
             }
@@ -220,6 +252,5 @@ namespace Example.WebApi.Controllers
                 return Request.CreateResponse(HttpStatusCode.InternalServerError, ex.Message);
             }
         }
-
     }
 }

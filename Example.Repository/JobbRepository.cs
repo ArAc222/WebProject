@@ -1,15 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Example.Repository.Common;
 using Npgsql;
 using Example.Model;
 
 namespace Example.Repository
 {
-    class JobbRepository : IJobRepository
+    public class JobbRepository : IJobRepository
     {
         public List<JobModel> GetJobs()
         {
@@ -23,31 +20,30 @@ namespace Example.Repository
                     {
                         using (NpgsqlDataReader reader = command.ExecuteReader())
                         {
-                            List<Job> jobsList = new List<Job>();
+                            List<JobModel> jobsList = new List<JobModel>();
                             while (reader.Read())
                             {
-                                Job job = new Job
+                                JobModel job = new JobModel
                                 {
                                     Id = reader.GetGuid(0),
-                                    Name = reader.GetString(1),
-                                    Salary = reader.GetInt32(2),
-                                    Type = reader.GetString(3)
+                                    Salary = Convert.ToInt32(reader["Salary"]),
+                                    Type = reader.GetString(1),
                                 };
                                 jobsList.Add(job);
                             }
-                            return  jobsList;
+                            return  null;
                         }
                     }
                 }
             }
             catch (NpgsqlException ex)
             {
-                return Request.CreateResponse(HttpStatusCode.InternalServerError, ex.Message);
+                return null;
             }
         }
 
         // GET api/job/5
-        public HttpResponseMessage GetJob(Guid id)
+        public JobModel GetJob(Guid id)
         {
             try
             {
@@ -63,18 +59,17 @@ namespace Example.Repository
                         {
                             if (reader.Read())
                             {
-                                Job job = new Job
+                                JobModel job = new JobModel
                                 {
                                     Id = reader.GetGuid(0),
-                                    Name = reader.GetString(1),
-                                    Salary = reader.GetInt32(2),
-                                    Type = reader.GetString(3)
+                                    Salary = Convert.ToInt32(reader["Salary"]),
+                                    Type = reader.GetString(1),
                                 };
-                                return Request.CreateResponse(HttpStatusCode.OK, job);
+                                return  job;
                             }
                             else
                             {
-                                return Request.CreateResponse(HttpStatusCode.NotFound, "Job not found");
+                                return  null;
                             }
                         }
                     }
@@ -82,12 +77,16 @@ namespace Example.Repository
             }
             catch (NpgsqlException ex)
             {
-                return Request.CreateResponse(HttpStatusCode.InternalServerError, ex.Message);
+                var errorMessage = "Error";
+
+                var customException = new Exception(errorMessage, ex);
+
+                throw customException;
             }
         }
 
         // POST api/job
-        public HttpResponseMessage Post([FromBody] Job job)
+        public bool Post(JobModel job)
         {
             try
             {
@@ -99,7 +98,6 @@ namespace Example.Repository
                     using (NpgsqlCommand command = new NpgsqlCommand("INSERT INTO \"Job\" (\"Id\", \"Name\", \"Salary\", \"Type\") VALUES (@Id, @Name, @Salary, @Type)", connection))
                     {
                         command.Parameters.AddWithValue("@Id", job.Id);
-                        command.Parameters.AddWithValue("@Name", job.Name);
                         command.Parameters.AddWithValue("@Salary", job.Salary);
                         command.Parameters.AddWithValue("@Type", job.Type);
 
@@ -107,23 +105,27 @@ namespace Example.Repository
 
                         if (result > 0)
                         {
-                            return Request.CreateResponse(HttpStatusCode.OK, job);
+                            return  true;
                         }
                         else
                         {
-                            return Request.CreateResponse(HttpStatusCode.BadRequest, "Error inserting job");
+                            return  false;
                         }
                     }
                 }
             }
             catch (NpgsqlException ex)
             {
-                return Request.CreateResponse(HttpStatusCode.InternalServerError, ex.Message);
+                var errorMessage = "Error";
+
+                var customException = new Exception(errorMessage, ex);
+
+                throw customException;
             }
         }
 
         // PUT api/job/5
-        public HttpResponseMessage Put(Guid id, [FromBody] Job job)
+        public bool Put(Guid id, JobModel job)
         {
             try
             {
@@ -140,20 +142,18 @@ namespace Example.Repository
                             if (reader.Read())
                             {
                                 // Ažuriram promijenjena polja
-                                job.Name = reader.GetString(1);
                                 job.Salary = reader.GetInt32(2);
                                 job.Type = reader.GetString(3);
                             }
                             else
                             {
-                                return Request.CreateResponse(HttpStatusCode.NotFound, "Job not found");
+                                return  true;
                             }
                         }
                     }
 
                     using (NpgsqlCommand updateCommand = new NpgsqlCommand("UPDATE \"Job\" SET \"Name\" = @Name, \"Salary\" = @Salary, \"Type\" = @Type WHERE \"Id\" = @id", connection))
                     {
-                        updateCommand.Parameters.AddWithValue("@Name", job.Name);
                         updateCommand.Parameters.AddWithValue("@Salary", job.Salary);
                         updateCommand.Parameters.AddWithValue("@Type", job.Type);
                         updateCommand.Parameters.AddWithValue("@id", id);
@@ -162,23 +162,27 @@ namespace Example.Repository
 
                         if (rowsAffected > 0)
                         {
-                            return Request.CreateResponse(HttpStatusCode.OK, true);
+                            return  true;
                         }
                         else
                         {
-                            return Request.CreateResponse(HttpStatusCode.NotFound, "Job not found");
+                            return false;
                         }
                     }
                 }
             }
             catch (NpgsqlException ex)
             {
-                return Request.CreateResponse(HttpStatusCode.InternalServerError, ex.Message);
+                var errorMessage = "Error";
+
+                var customException = new Exception(errorMessage, ex);
+
+                throw customException;
             }
         }
 
         // DELETE api/job/5
-        public HttpResponseMessage Delete(Guid id)
+        public bool Delete(Guid id)
         {
             try
             {
@@ -194,24 +198,28 @@ namespace Example.Repository
 
                         if (rowsAffected > 0)
                         {
-                            return Request.CreateResponse(HttpStatusCode.OK, true);
+                            return true;
                         }
                         else
                         {
-                            return Request.CreateResponse(HttpStatusCode.NotFound, "Job not found");
+                            return  false;
                         }
                     }
                 }
             }
             catch (NpgsqlException ex)
             {
-                return Request.CreateResponse(HttpStatusCode.InternalServerError, ex.Message);
+                var errorMessage = "Error";
+
+                var customException = new Exception(errorMessage, ex);
+
+                throw customException;
             }
+
         }
 
         // GET api/job/workers/5
-        [Route("api/job/workers/{jobId}")]
-        public HttpResponseMessage GetWorkersForJob(Guid jobId)
+        public List<WorkerModel> GetWorkersForJob(Guid jobId)
         {
             try
             {
@@ -225,7 +233,7 @@ namespace Example.Repository
 
                         using (NpgsqlDataReader reader = command.ExecuteReader())
                         {
-                            List<Worker> workersList = new List<Worker>();
+                            List<WorkerModel> workersList = new List<WorkerModel>();
                             while (reader.Read())
                             {
                                 Worker worker = new Worker
@@ -238,15 +246,21 @@ namespace Example.Repository
                                 };
                                 workersList.Add(worker);
                             }
-                            return Request.CreateResponse(HttpStatusCode.OK, workersList);
+                            return workersList;
                         }
                     }
                 }
             }
             catch (NpgsqlException ex)
             {
-                return Request.CreateResponse(HttpStatusCode.InternalServerError, ex.Message);
+                var errorMessage = "Error";
+
+                var customException = new Exception(errorMessage, ex);
+
+                throw customException;
             }
+
+
         }
     }
 }

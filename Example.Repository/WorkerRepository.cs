@@ -1,16 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Example.Model;
 using Example.Repository.Common;
+using Npgsql;
+using Example.Model;
 
 namespace Example.Repository
 {
-    class WorkerRepository : IWorkerRepository
+    public class WorkerRepository : IWorkerRepository
     {
-        public List<Worker> GetWorkers()
+        public List<WorkerModel> GetWorkers()
         {
             try
             {
@@ -22,10 +20,10 @@ namespace Example.Repository
                     {
                         using (NpgsqlDataReader reader = command.ExecuteReader())
                         {
-                            List<Worker> workersList = new List<Worker>();
+                            List<WorkerModel> workersList = new List<WorkerModel>();
                             while (reader.Read())
                             {
-                                Worker worker = new Worker
+                                WorkerModel worker = new WorkerModel
                                 {
                                     Id = reader.GetGuid(0),
                                     FirstName = reader.GetString(1),
@@ -34,19 +32,23 @@ namespace Example.Repository
                                 };
                                 workersList.Add(worker);
                             }
-                            return Request.CreateResponse(HttpStatusCode.OK, workersList);
+                            return  workersList;
                         }
                     }
                 }
             }
             catch (NpgsqlException ex)
             {
-                return Request.CreateResponse(HttpStatusCode.InternalServerError, ex.Message);
+                var errorMessage = "Error";
+
+                var customException = new Exception(errorMessage, ex);
+
+                throw customException;
             }
         }
 
         // GET api/worker/5
-        public  GetWorker(Guid id)
+        public WorkerModel GetWorker(Guid id)
         {
             try
             {
@@ -62,18 +64,18 @@ namespace Example.Repository
                         {
                             if (reader.Read())
                             {
-                                Worker worker = new Worker
+                                WorkerModel worker = new WorkerModel
                                 {
                                     Id = reader.GetGuid(0),
                                     FirstName = reader.GetString(1),
                                     LastName = reader.GetString(2),
                                     Gender = reader.GetChar(3)
                                 };
-                                return Request.CreateResponse(HttpStatusCode.OK, worker);
+                                return  worker;
                             }
                             else
                             {
-                                return Request.CreateResponse(HttpStatusCode.NotFound, "Worker not found");
+                                return  null;
                             }
                         }
                     }
@@ -81,12 +83,16 @@ namespace Example.Repository
             }
             catch (NpgsqlException ex)
             {
-                return Request.CreateResponse(HttpStatusCode.InternalServerError, ex.Message);
+                var errorMessage = "Error";
+
+                var customException = new Exception(errorMessage, ex);
+
+                throw customException;
             }
         }
 
         // POST api/worker
-        public  Post([FromBody] Worker worker)
+        public bool Post( WorkerModel worker)
         {
             try
             {
@@ -105,23 +111,27 @@ namespace Example.Repository
 
                         if (result > 0)
                         {
-                            return Request.CreateResponse(HttpStatusCode.OK, worker);
+                            return true;
                         }
                         else
                         {
-                            return Request.CreateResponse(HttpStatusCode.BadRequest, "Error inserting worker");
+                            return  false;
                         }
                     }
                 }
             }
             catch (NpgsqlException ex)
             {
-                return Request.CreateResponse(HttpStatusCode.InternalServerError, ex.Message);
+                var errorMessage = "Error";
+
+                var customException = new Exception(errorMessage, ex);
+
+                throw customException;
             }
         }
 
         // PUT api/worker/5
-        public bool Put(Guid id, Worker worker)
+        public bool Put(Guid id, WorkerModel worker)
         {
             try
             {
@@ -172,7 +182,11 @@ namespace Example.Repository
             }
             catch (NpgsqlException ex)
             {
-                return Request.CreateResponse(HttpStatusCode.InternalServerError, ex.Message);
+                var errorMessage = "Error";
+
+                var customException = new Exception(errorMessage, ex);
+
+                throw customException;
             }
         }
 
@@ -204,13 +218,16 @@ namespace Example.Repository
             }
             catch (NpgsqlException ex)
             {
-                return Request.CreateResponse(HttpStatusCode.InternalServerError, ex.Message);
+                var errorMessage = "Error";
+
+                var customException = new Exception(errorMessage, ex);
+
+                throw customException;
             }
         }
 
         // PUT api/worker/setjob/5
-        [Route("api/worker/setjob/{workerId}")]
-        public bool SetJob(Guid workerId, [FromBody] Guid jobId)
+        public bool SetJob(Guid workerId, Guid jobId)
         {
             try
             {
@@ -238,7 +255,11 @@ namespace Example.Repository
             }
             catch (NpgsqlException ex)
             {
-                return ex.Message;
+                var errorMessage = "Error";
+
+                var customException = new Exception(errorMessage, ex);
+
+                throw customException;
             }
         }
 

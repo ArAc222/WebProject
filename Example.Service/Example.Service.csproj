@@ -89,12 +89,27 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Class1.cs" />
+    <Compile Include="JobService.cs" />
+    <Compile Include="WorkerService.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
     <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Example.Model\Example.Model.csproj">
+      <Project>{1d7247db-6da3-40e6-a224-fd04cfbf76aa}</Project>
+      <Name>Example.Model</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Example.Repository.Common\Example.Repository.Common.csproj">
+      <Project>{2cfe6f20-1851-4ff2-a65d-60b285c08d52}</Project>
+      <Name>Example.Repository.Common</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Example.Repository\Example.Repository.csproj">
+      <Project>{7e86aa3c-9f11-4fe4-a8f4-361912709a5d}</Project>
+      <Name>Example.Repository</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="..\packages\Microsoft.Extensions.Logging.Abstractions.6.0.0\build\Microsoft.Extensions.Logging.Abstractions.targets" Condition="Exists('..\packages\Microsoft.Extensions.Logging.Abstractions.6.0.0\build\Microsoft.Extensions.Logging.Abstractions.targets')" />
