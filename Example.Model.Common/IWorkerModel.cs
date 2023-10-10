@@ -1,12 +1,14 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Example.Model.Common
-{
-    public class Class1
+{ 
+    public interface IWorkerModel
     {
+        Guid Id { get; set; }
+        string FirstName { get; set; }
+        string LastName { get; set; }
+        char Gender { get; set; }
+        Guid JobId { get; set; }
     }
 }
+

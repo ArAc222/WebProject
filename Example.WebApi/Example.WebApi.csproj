@@ -299,9 +299,17 @@
       <Project>{d45e732e-5e71-49ff-ba6f-9c2d2c5f2fac}</Project>
       <Name>Example.Common</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Example.Model.Common\Example.Model.Common.csproj">
+      <Project>{7F098CB8-3815-477A-94E1-CCA33BC4D431}</Project>
+      <Name>Example.Model.Common</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Example.Model\Example.Model.csproj">
       <Project>{1d7247db-6da3-40e6-a224-fd04cfbf76aa}</Project>
       <Name>Example.Model</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Example.Repository\Example.Repository.csproj">
+      <Project>{7e86aa3c-9f11-4fe4-a8f4-361912709a5d}</Project>
+      <Name>Example.Repository</Name>
     </ProjectReference>
     <ProjectReference Include="..\Example.Service\Example.Service.csproj">
       <Project>{b4715802-fb88-47a8-9859-cc52c391b884}</Project>

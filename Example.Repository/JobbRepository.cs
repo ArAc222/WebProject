@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Example.Repository.Common;
 using Npgsql;
 using Example.Model;
+using Example.Model.Common;
 
 namespace Example.Repository
 {
@@ -38,7 +39,11 @@ namespace Example.Repository
             }
             catch (NpgsqlException ex)
             {
-                return null;
+                var errorMessage = "Error";
+
+                var customException = new Exception(errorMessage, ex);
+
+                throw customException;
             }
         }
 
@@ -141,7 +146,6 @@ namespace Example.Repository
                         {
                             if (reader.Read())
                             {
-                                // Ažuriram promijenjena polja
                                 job.Salary = reader.GetInt32(2);
                                 job.Type = reader.GetString(3);
                             }
@@ -236,7 +240,7 @@ namespace Example.Repository
                             List<WorkerModel> workersList = new List<WorkerModel>();
                             while (reader.Read())
                             {
-                                Worker worker = new Worker
+                                WorkerModel worker = new WorkerModel
                                 {
                                     Id = reader.GetGuid(0),
                                     FirstName = reader.GetString(1),
@@ -261,6 +265,31 @@ namespace Example.Repository
             }
 
 
+        }
+
+        List<IJobModel> IJobRepository.GetJobs()
+        {
+            throw new NotImplementedException();
+        }
+
+        IJobModel IJobRepository.GetJob(Guid id)
+        {
+            throw new NotImplementedException();
+        }
+
+        public bool Post(IJobModel job)
+        {
+            throw new NotImplementedException();
+        }
+
+        public bool Put(Guid id, IJobModel job)
+        {
+            throw new NotImplementedException();
+        }
+
+        List<IWorkerModel> IJobRepository.GetWorkersForJob(Guid jobId)
+        {
+            throw new NotImplementedException();
         }
     }
 }

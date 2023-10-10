@@ -1,12 +1,10 @@
-﻿// JobController
-
-using Example.WebApi.Models;
-using Npgsql;
+﻿using Npgsql;
 using System;
 using System.Collections.Generic;
 using System.Net;
 using System.Net.Http;
 using System.Web.Http;
+using Example.Model;
 
 namespace Example.WebApi.Controllers
 {
@@ -32,10 +30,10 @@ namespace Example.WebApi.Controllers
                     {
                         using (NpgsqlDataReader reader = command.ExecuteReader())
                         {
-                            List<Job> jobsList = new List<Job>();
+                            List<JobModel> jobsList = new List<JobModel>();
                             while (reader.Read())
                             {
-                                Job job = new Job
+                                JobModel job = new JobModel
                                 {
                                     Id = reader.GetGuid(0),
                                     Salary = reader.GetInt32(2),
@@ -63,15 +61,15 @@ namespace Example.WebApi.Controllers
                 {
                     connection.Open();
 
-                    using (NpgsqlCommand command = new NpgsqlCommand("SELECT * FROM \"Job\" WHERE \"Id\" = @id", connection))
+                    using (NpgsqlCommand command = new NpgsqlCommand("SELECT * FROM \"JobModel\" WHERE \"Id\" = @Id", connection))
                     {
-                        command.Parameters.AddWithValue("@id", id);
+                        command.Parameters.AddWithValue("@Id", id);
 
                         using (NpgsqlDataReader reader = command.ExecuteReader())
                         {
                             if (reader.Read())
                             {
-                                Job job = new Job
+                                JobModel job = new JobModel
                                 {
                                     Id = reader.GetGuid(0),
                                     Salary = reader.GetInt32(2),
@@ -94,7 +92,7 @@ namespace Example.WebApi.Controllers
         }
 
         // POST api/job
-        public HttpResponseMessage Post([FromBody] Job job)
+        public HttpResponseMessage Post([FromBody] JobModel job)
         {
             try
             {
@@ -129,7 +127,7 @@ namespace Example.WebApi.Controllers
         }
 
         // PUT api/job/5
-        public HttpResponseMessage Put(Guid id, [FromBody] Job job)
+        public HttpResponseMessage Put(Guid id, [FromBody] JobModel job)
         {
             try
             {
@@ -137,9 +135,9 @@ namespace Example.WebApi.Controllers
                 {
                     connection.Open();
 
-                    using (NpgsqlCommand getCommand = new NpgsqlCommand("SELECT * FROM \"Job\" WHERE \"Id\" = @id", connection))
+                    using (NpgsqlCommand getCommand = new NpgsqlCommand("SELECT * FROM \"JobModel\" WHERE \"Id\" = @Id", connection))
                     {
-                        getCommand.Parameters.AddWithValue("@id", id);
+                        getCommand.Parameters.AddWithValue("@Id", id);
 
                         using (NpgsqlDataReader reader = getCommand.ExecuteReader())
                         {
@@ -156,9 +154,9 @@ namespace Example.WebApi.Controllers
                         }
                     }
 
-                    using (NpgsqlCommand updateCommand = new NpgsqlCommand("UPDATE \"Job\" SET \"Name\" = @Name, \"Salary\" = @Salary, \"Type\" = @Type WHERE \"Id\" = @id", connection))
+                    using (NpgsqlCommand updateCommand = new NpgsqlCommand("UPDATE \"JobModel\" SET \"Name\" = @Name, \"Salary\" = @Salary, \"Type\" = @Type WHERE \"Id\" = @Id", connection))
                     {
-                        updateCommand.Parameters.AddWithValue("@id", job.Id);
+                        updateCommand.Parameters.AddWithValue("@Id", job.Id);
                         updateCommand.Parameters.AddWithValue("@Salary", job.Salary);
                         updateCommand.Parameters.AddWithValue("@Type", job.Type);
 
@@ -190,9 +188,9 @@ namespace Example.WebApi.Controllers
                 {
                     connection.Open();
 
-                    using (NpgsqlCommand command = new NpgsqlCommand("DELETE FROM \"Job\" WHERE \"Id\" = @id", connection))
+                    using (NpgsqlCommand command = new NpgsqlCommand("DELETE FROM \"JobModel\" WHERE \"Id\" = @Id", connection))
                     {
-                        command.Parameters.AddWithValue("@id", id);
+                        command.Parameters.AddWithValue("@Id", id);
 
                         int rowsAffected = command.ExecuteNonQuery();
 
@@ -223,16 +221,16 @@ namespace Example.WebApi.Controllers
                 {
                     connection.Open();
 
-                    using (NpgsqlCommand command = new NpgsqlCommand("SELECT * FROM \"Worker\" WHERE \"JobId\" = @JobId", connection))
+                    using (NpgsqlCommand command = new NpgsqlCommand("SELECT * FROM \"WorkerModel\" WHERE \"JobId\" = @JobId", connection))
                     {
                         command.Parameters.AddWithValue("@JobId", jobId);
 
                         using (NpgsqlDataReader reader = command.ExecuteReader())
                         {
-                            List<Worker> workersList = new List<Worker>();
+                            List<WorkerModel> workersList = new List<WorkerModel>();
                             while (reader.Read())
                             {
-                                Worker worker = new Worker
+                                WorkerModel worker = new WorkerModel
                                 {
                                     Id = reader.GetGuid(0),
                                     FirstName = reader.GetString(1),

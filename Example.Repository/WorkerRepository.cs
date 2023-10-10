@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Example.Repository.Common;
 using Npgsql;
 using Example.Model;
+using Example.Model.Common;
 
 namespace Example.Repository
 {
@@ -56,9 +57,9 @@ namespace Example.Repository
                 {
                     connection.Open();
 
-                    using (NpgsqlCommand command = new NpgsqlCommand("SELECT * FROM \"Worker\" WHERE \"Id\" = @id", connection))
+                    using (NpgsqlCommand command = new NpgsqlCommand("SELECT * FROM \"Worker\" WHERE \"Id\" = @Id", connection))
                     {
-                        command.Parameters.AddWithValue("@id", id);
+                        command.Parameters.AddWithValue("@Id", id);
 
                         using (NpgsqlDataReader reader = command.ExecuteReader())
                         {
@@ -140,15 +141,14 @@ namespace Example.Repository
                 {
                     connection.Open();
 
-                    using (NpgsqlCommand getCommand = new NpgsqlCommand("SELECT * FROM \"Worker\" WHERE \"Id\" = @id", connection))
+                    using (NpgsqlCommand getCommand = new NpgsqlCommand("SELECT * FROM \"Worker\" WHERE \"Id\" = @Id", connection))
                     {
-                        getCommand.Parameters.AddWithValue("@id", id);
+                        getCommand.Parameters.AddWithValue("@Id", id);
 
                         using (NpgsqlDataReader reader = getCommand.ExecuteReader())
                         {
                             if (reader.Read())
                             {
-                                // Ažuriram promijenjena polja
                                 worker.FirstName = reader.GetString(1);
                                 worker.LastName = reader.GetString(2);
                                 worker.Gender = reader.GetChar(3);
@@ -160,12 +160,11 @@ namespace Example.Repository
                         }
                     }
 
-                    using (NpgsqlCommand updateCommand = new NpgsqlCommand("UPDATE \"Worker\" SET \"FirstName\" = @FirstName, \"LastName\" = @LastName, \"Gender\" = @Gender WHERE \"Id\" = @id", connection))
+                    using (NpgsqlCommand updateCommand = new NpgsqlCommand("UPDATE \"Worker\" SET \"FirstName\" = @FirstName, \"LastName\" = @LastName, \"Gender\" = @Gender WHERE \"Id\" = @Id", connection))
                     {
                         updateCommand.Parameters.AddWithValue("@FirstName", worker.FirstName);
                         updateCommand.Parameters.AddWithValue("@LastName", worker.LastName);
                         updateCommand.Parameters.AddWithValue("@Gender", worker.Gender);
-                        updateCommand.Parameters.AddWithValue("@id", id);
 
                         int rowsAffected = updateCommand.ExecuteNonQuery();
 
@@ -199,9 +198,9 @@ namespace Example.Repository
                 {
                     connection.Open();
 
-                    using (NpgsqlCommand command = new NpgsqlCommand("DELETE FROM \"Worker\" WHERE \"Id\" = @id", connection))
+                    using (NpgsqlCommand command = new NpgsqlCommand("DELETE FROM \"Worker\" WHERE \"Id\" = @Id", connection))
                     {
-                        command.Parameters.AddWithValue("@id", id);
+                        command.Parameters.AddWithValue("@Id", id);
 
                         int rowsAffected = command.ExecuteNonQuery();
 
@@ -263,6 +262,24 @@ namespace Example.Repository
             }
         }
 
+        List<IWorkerModel> IWorkerRepository.GetWorkers()
+        {
+            throw new NotImplementedException();
+        }
 
+        IWorkerModel IWorkerRepository.GetWorker(Guid id)
+        {
+            throw new NotImplementedException();
+        }
+
+        public bool Post(IWorkerModel worker)
+        {
+            throw new NotImplementedException();
+        }
+
+        public bool Put(Guid id, IWorkerModel worker)
+        {
+            throw new NotImplementedException();
+        }
     }
 }
