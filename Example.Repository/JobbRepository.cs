@@ -10,7 +10,7 @@ namespace Example.Repository
 {
     public class JobRepository : IJobRepository
     {
-        public async Task<List<JobModel>> GetJobsAsync()
+        public async Task<List<IJobModel>> GetJobsAsync()
         {
             try
             {
@@ -22,10 +22,10 @@ namespace Example.Repository
                     {
                         using (NpgsqlDataReader reader = await command.ExecuteReaderAsync())
                         {
-                            List<JobModel> jobsList = new List<JobModel>();
+                            List<IJobModel> jobsList = new List<IJobModel>();
                             while (await reader.ReadAsync())
                             {
-                                JobModel job = new JobModel
+                                IJobModel job = new JobModel
                                 {
                                     Id = reader.GetGuid(0),
                                     Salary = reader.GetInt32(1),
@@ -48,7 +48,7 @@ namespace Example.Repository
             }
         }
 
-        public async Task<JobModel> GetJobAsync(Guid id)
+        public async Task<IJobModel> GetJobAsync(Guid id)
         {
             try
             {
@@ -64,7 +64,7 @@ namespace Example.Repository
                         {
                             if (await reader.ReadAsync())
                             {
-                                JobModel job = new JobModel
+                                IJobModel job = new JobModel
                                 {
                                     Id = reader.GetGuid(0),
                                     Salary = reader.GetInt32(1),
@@ -90,7 +90,7 @@ namespace Example.Repository
             }
         }
 
-        public async Task<bool> PostAsync(JobModel job)
+        public async Task<bool> PostAsync(IJobModel job)
         {
             try
             {
@@ -128,7 +128,7 @@ namespace Example.Repository
             }
         }
 
-        public async Task<bool> PutAsync(Guid id, JobModel job)
+        public async Task<bool> PutAsync(Guid id, IJobModel job)
         {
             try
             {
@@ -259,5 +259,6 @@ namespace Example.Repository
                 throw customException;
             }
         }
+
     }
 }

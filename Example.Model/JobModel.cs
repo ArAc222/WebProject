@@ -9,6 +9,6 @@ namespace Example.Model
         public Guid Id { get; set; }
         public int Salary { get; set; }
         public string Type { get; set; }
-        public List<WorkerModel> Workers { get; set; }
+        public List<IWorkerModel> Workers { get; set; }
     }
 }

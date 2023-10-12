@@ -1,26 +1,28 @@
 ﻿using System;
 using System.Collections.Generic;
 using Example.Model;
-using Example.Repository;
 using System.Threading.Tasks;
+using Example.Service.Common;
+using Example.Repository.Common;
+using Example.Model.Common;
 
 namespace Example.Service
 {
-    public class JobService
+    public class JobService : IJobService
     {
-        private JobbRepository _jobRepository;
+        private IJobRepository _jobRepository;
 
-        public JobService(JobbRepository jobRepository)
+        public JobService(IJobRepository jobRepository)
         {
             _jobRepository = jobRepository;
         }
 
-        public async Task<List<JobModel>> GetJobsAsync()
+        public async Task<List<IJobModel>> GetJobsAsync()
         {
             return await _jobRepository.GetJobsAsync();
         }
 
-        public async Task<JobModel> GetJobAsync(Guid id)
+        public async Task<IJobModel> GetJobAsync(Guid id)
         {
             return await _jobRepository.GetJobAsync(id);
         }
@@ -40,7 +42,7 @@ namespace Example.Service
             return await _jobRepository.DeleteAsync(id);
         }
 
-        public async Task<List<WorkerModel>> GetWorkersForJobAsync(Guid jobId)
+        public async Task<List<IWorkerModel>> GetWorkersForJobAsync(Guid jobId)
         {
             return await _jobRepository.GetWorkersForJobAsync(jobId);
         }

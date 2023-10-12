@@ -11,7 +11,7 @@ namespace Example.Repository.Common
         Task<IJobModel> GetJobAsync(Guid id);
         Task<bool> PostAsync(IJobModel job);
         Task<bool> PutAsync(Guid id, IJobModel job);
-        bool DeleteAsync(Guid id);
+        Task<bool> DeleteAsync(Guid id);
         Task<List<IWorkerModel>> GetWorkersForJobAsync(Guid jobId);
     }
 
