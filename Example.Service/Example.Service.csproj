@@ -114,6 +114,10 @@
       <Project>{7e86aa3c-9f11-4fe4-a8f4-361912709a5d}</Project>
       <Name>Example.Repository</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Example.Service.Common\Example.Service.Common.csproj">
+      <Project>{72BBC6AE-F98B-4C04-87B9-82C07DF2CBA2}</Project>
+      <Name>Example.Service.Common</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="..\packages\Microsoft.Extensions.Logging.Abstractions.6.0.0\build\Microsoft.Extensions.Logging.Abstractions.targets" Condition="Exists('..\packages\Microsoft.Extensions.Logging.Abstractions.6.0.0\build\Microsoft.Extensions.Logging.Abstractions.targets')" />

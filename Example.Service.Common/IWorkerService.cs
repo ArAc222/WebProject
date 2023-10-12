@@ -1,16 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using Example.Model;
+using Example.Model.Common;
 
 namespace Example.Service.Common
 {
     public interface IWorkerService
     {
-        List<WorkerModel> GetWorkers();
-        WorkerModel GetWorker(Guid id);
-        bool AddWorker(WorkerModel worker);
-        bool UpdateWorker(Guid id, WorkerModel worker);
-        bool DeleteWorker(Guid id);
-        bool SetJob(Guid workerId, Guid jobId);
+        Task<List<IWorkerModel>> GetWorkers();
+        Task<IWorkerModel> GetWorker(Guid id);
+        Task<bool> AddWorker(IWorkerModel worker);
+        Task<bool> UpdateWorker(Guid id, IWorkerModel worker);
+        Task<bool> DeleteWorker(Guid id);
+        Task<bool> SetJob(Guid workerId, Guid jobId);
     }
 }

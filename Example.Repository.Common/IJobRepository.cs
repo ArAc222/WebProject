@@ -1,17 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using Example.Model.Common;
 
 namespace Example.Repository.Common
 {
     public interface IJobRepository
     {
-        List<IJobModel> GetJobs();
-        IJobModel GetJob(Guid id);
-        bool Post(IJobModel job);
-        bool Put(Guid id, IJobModel job);
-        bool Delete(Guid id);
-        List<IWorkerModel> GetWorkersForJob(Guid jobId);
+        Task<List<IJobModel>> GetJobsAsync();
+        Task<IJobModel> GetJobAsync(Guid id);
+        Task<bool> PostAsync(IJobModel job);
+        Task<bool> PutAsync(Guid id, IJobModel job);
+        bool DeleteAsync(Guid id);
+        Task<List<IWorkerModel>> GetWorkersForJobAsync(Guid jobId);
     }
 
 }

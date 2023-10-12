@@ -2,47 +2,79 @@
 using System.Collections.Generic;
 using Example.Model;
 using Example.Repository;
+using System.Threading.Tasks;
+using Example.Service.Common;
 using Example.Model.Common;
 
 namespace Example.Service
 {
-    public class WorkerService
+    public class WorkerService : IWorkerService
     {
-        private  WorkerRepository _workerRepository;
+        private WorkerRepository _workerRepository;
 
         public WorkerService(WorkerRepository workerRepository)
         {
             _workerRepository = workerRepository;
         }
 
-        public List<WorkerModel> GetWorkers()
+        public async Task<List<IWorkerModel>> GetWorkersAsync()
         {
-            return _workerRepository.GetWorkers();
+            return await _workerRepository.GetWorkersAsync();
         }
 
-        public WorkerModel GetWorker(Guid id)
+        public async Task<IWorkerModel> GetWorkerAsync(Guid id)
         {
-            return _workerRepository.GetWorker(id);
+            return await _workerRepository.GetWorkerAsync(id);
         }
 
-        public bool AddWorker(WorkerModel worker)
+        public async Task<bool> AddWorkerAsync(WorkerModel worker)
         {
-            return _workerRepository.Post(worker);
+            return await _workerRepository.PostAsync(worker);
         }
 
-        public bool UpdateWorker(Guid id, WorkerModel worker)
+        public async Task<bool> UpdateWorkerAsync(Guid id, WorkerModel worker)
         {
-            return _workerRepository.Put(id, worker);
+            return await _workerRepository.PutAsync(id, worker);
         }
 
-        public bool DeleteWorker(Guid id)
+        public async Task<bool> DeleteWorkerAsync(Guid id)
         {
-            return _workerRepository.Delete(id);
+            return await _workerRepository.DeleteAsync(id);
         }
 
-        public bool SetJob(Guid workerId, Guid jobId)
+        public async Task<bool> SetJobAsync(Guid workerId, Guid jobId)
         {
-            return _workerRepository.SetJob(workerId, jobId);
+            return await _workerRepository.SetJobAsync(workerId, jobId);
+        }
+
+        public Task<List<IWorkerModel>> GetWorkers()
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<IWorkerModel> GetWorker(Guid id)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<bool> AddWorker(IWorkerModel worker)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<bool> UpdateWorker(Guid id, IWorkerModel worker)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<bool> DeleteWorker(Guid id)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<bool> SetJob(Guid workerId, Guid jobId)
+        {
+            throw new NotImplementedException();
         }
     }
 }

@@ -2,46 +2,47 @@
 using System.Collections.Generic;
 using Example.Model;
 using Example.Repository;
+using System.Threading.Tasks;
 
 namespace Example.Service
+{
+    public class JobService
     {
-        public class JobService
+        private JobbRepository _jobRepository;
+
+        public JobService(JobbRepository jobRepository)
         {
-            private  JobbRepository _jobRepository;
+            _jobRepository = jobRepository;
+        }
 
-            public JobService(JobbRepository jobRepository)
-            {
-                _jobRepository = jobRepository;
-            }
+        public async Task<List<JobModel>> GetJobsAsync()
+        {
+            return await _jobRepository.GetJobsAsync();
+        }
 
-            public List<JobModel> GetJobs()
-            {
-                return _jobRepository.GetJobs();
-            }
+        public async Task<JobModel> GetJobAsync(Guid id)
+        {
+            return await _jobRepository.GetJobAsync(id);
+        }
 
-            public JobModel GetJob(Guid id)
-            {
-                return _jobRepository.GetJob(id);
-            }
+        public async Task<bool> AddJobAsync(JobModel job)
+        {
+            return await _jobRepository.PostAsync(job);
+        }
 
-            public bool AddJob(JobModel job)
-            {
-                return _jobRepository.Post(job);
-            }
+        public async Task<bool> UpdateJobAsync(Guid id, JobModel job)
+        {
+            return await _jobRepository.PutAsync(id, job);
+        }
 
-            public bool UpdateJob(Guid id, JobModel job)
-            {
-                return _jobRepository.Put(id, job);
-            }
+        public async Task<bool> DeleteJobAsync(Guid id)
+        {
+            return await _jobRepository.DeleteAsync(id);
+        }
 
-            public bool DeleteJob(Guid id)
-            {
-                return _jobRepository.Delete(id);
-            }
-
-            public List<WorkerModel> GetWorkersForJob(Guid jobId)
-            {
-                return _jobRepository.GetWorkersForJob(jobId);
-            }
+        public async Task<List<WorkerModel>> GetWorkersForJobAsync(Guid jobId)
+        {
+            return await _jobRepository.GetWorkersForJobAsync(jobId);
         }
     }
+}

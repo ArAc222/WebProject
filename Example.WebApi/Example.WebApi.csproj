@@ -311,6 +311,10 @@
       <Project>{7e86aa3c-9f11-4fe4-a8f4-361912709a5d}</Project>
       <Name>Example.Repository</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Example.Service.Common\Example.Service.Common.csproj">
+      <Project>{72bbc6ae-f98b-4c04-87b9-82c07df2cba2}</Project>
+      <Name>Example.Service.Common</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Example.Service\Example.Service.csproj">
       <Project>{b4715802-fb88-47a8-9859-cc52c391b884}</Project>
       <Name>Example.Service</Name>

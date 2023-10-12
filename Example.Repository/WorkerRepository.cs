@@ -4,25 +4,26 @@ using Example.Repository.Common;
 using Npgsql;
 using Example.Model;
 using Example.Model.Common;
+using System.Threading.Tasks;
 
 namespace Example.Repository
 {
     public class WorkerRepository : IWorkerRepository
     {
-        public List<WorkerModel> GetWorkers()
+        public async Task<List<IWorkerModel>> GetWorkersAsync()
         {
             try
             {
                 using (NpgsqlConnection connection = new NpgsqlConnection("Host=localhost;Port=5432;Username=postgres;Password=student1;Database=workerDB"))
                 {
-                    connection.Open();
+                    await connection.OpenAsync();
 
                     using (NpgsqlCommand command = new NpgsqlCommand("SELECT * FROM \"Worker\";", connection))
                     {
-                        using (NpgsqlDataReader reader = command.ExecuteReader())
+                        using (NpgsqlDataReader reader = await command.ExecuteReaderAsync())
                         {
-                            List<WorkerModel> workersList = new List<WorkerModel>();
-                            while (reader.Read())
+                            List<IWorkerModel> workersList = new List<IWorkerModel>();
+                            while (await reader.ReadAsync())
                             {
                                 WorkerModel worker = new WorkerModel
                                 {
@@ -31,9 +32,15 @@ namespace Example.Repository
                                     LastName = reader.GetString(2),
                                     Gender = reader.GetChar(3)
                                 };
-                                workersList.Add(worker);
+
+                                // Dodajte povezani posao za radnika
+                                Guid jobId = reader.GetGuid(4);
+                                IJobModel job = await GetJobAsync(jobId);
+                                worker.Job = job;
+
+                                workersList.Add((IWorkerModel)worker);
                             }
-                            return  workersList;
+                            return workersList;
                         }
                     }
                 }
@@ -48,35 +55,40 @@ namespace Example.Repository
             }
         }
 
-        // GET api/worker/5
-        public WorkerModel GetWorker(Guid id)
+        public async Task<IWorkerModel> GetWorkerAsync(Guid id)
         {
             try
             {
                 using (NpgsqlConnection connection = new NpgsqlConnection("Host=localhost;Port=5432;Username=postgres;Password=student1;Database=workerDB"))
                 {
-                    connection.Open();
+                    await connection.OpenAsync();
 
                     using (NpgsqlCommand command = new NpgsqlCommand("SELECT * FROM \"Worker\" WHERE \"Id\" = @Id", connection))
                     {
                         command.Parameters.AddWithValue("@Id", id);
 
-                        using (NpgsqlDataReader reader = command.ExecuteReader())
+                        using (NpgsqlDataReader reader = await command.ExecuteReaderAsync())
                         {
-                            if (reader.Read())
+                            if (await reader.ReadAsync())
                             {
-                                WorkerModel worker = new WorkerModel
+                                IWorkerModel worker = new WorkerModel()
                                 {
                                     Id = reader.GetGuid(0),
                                     FirstName = reader.GetString(1),
                                     LastName = reader.GetString(2),
                                     Gender = reader.GetChar(3)
                                 };
-                                return  worker;
+
+                                // Dodajte povezani posao za radnika
+                                Guid jobId = reader.GetGuid(4);
+                                IJobModel job = await GetJobAsync(jobId);
+                                worker.Job = job;
+
+                                return worker;
                             }
                             else
                             {
-                                return  null;
+                                return null;
                             }
                         }
                     }
@@ -92,23 +104,24 @@ namespace Example.Repository
             }
         }
 
-        // POST api/worker
-        public bool Post( WorkerModel worker)
+        public async Task<bool> PostAsync(IWorkerModel worker)
         {
             try
             {
                 worker.Id = Guid.NewGuid();
                 using (NpgsqlConnection connection = new NpgsqlConnection("Host=localhost;Port=5432;Username=postgres;Password=student1;Database=workerDB"))
                 {
-                    connection.Open();
+                    await connection.OpenAsync();
 
-                    using (NpgsqlCommand command = new NpgsqlCommand("INSERT INTO \"Worker\" (\"Id\", \"FirstName\", \"LastName\", \"Gender\") VALUES (@WorkerId, @FirstName, @LastName, @Gender)", connection))
+                    using (NpgsqlCommand command = new NpgsqlCommand("INSERT INTO \"Worker\" (\"Id\", \"FirstName\", \"LastName\", \"Gender\", \"JobId\") VALUES (@WorkerId, @FirstName, @LastName, @Gender, @JobId)", connection))
                     {
                         command.Parameters.AddWithValue("@WorkerId", worker.Id);
                         command.Parameters.AddWithValue("@FirstName", worker.FirstName);
                         command.Parameters.AddWithValue("@LastName", worker.LastName);
                         command.Parameters.AddWithValue("@Gender", worker.Gender);
-                        int result = command.ExecuteNonQuery();
+                        command.Parameters.AddWithValue("@JobId", worker.Job.Id);
+
+                        int result = await command.ExecuteNonQueryAsync();
 
                         if (result > 0)
                         {
@@ -116,7 +129,7 @@ namespace Example.Repository
                         }
                         else
                         {
-                            return  false;
+                            return false;
                         }
                     }
                 }
@@ -131,23 +144,21 @@ namespace Example.Repository
             }
         }
 
-        // PUT api/worker/5
-        public bool Put(Guid id, WorkerModel worker)
+        public async Task<bool> PutAsync(Guid id, IWorkerModel worker)
         {
             try
             {
-                // Instanciram connection objekt unutar metode
                 using (NpgsqlConnection connection = new NpgsqlConnection("Host=localhost;Port=5432;Username=postgres;Password=student1;Database=workerDB"))
                 {
-                    connection.Open();
+                    await connection.OpenAsync();
 
                     using (NpgsqlCommand getCommand = new NpgsqlCommand("SELECT * FROM \"Worker\" WHERE \"Id\" = @Id", connection))
                     {
                         getCommand.Parameters.AddWithValue("@Id", id);
 
-                        using (NpgsqlDataReader reader = getCommand.ExecuteReader())
+                        using (NpgsqlDataReader reader = await getCommand.ExecuteReaderAsync())
                         {
-                            if (reader.Read())
+                            if (await reader.ReadAsync())
                             {
                                 worker.FirstName = reader.GetString(1);
                                 worker.LastName = reader.GetString(2);
@@ -160,13 +171,14 @@ namespace Example.Repository
                         }
                     }
 
-                    using (NpgsqlCommand updateCommand = new NpgsqlCommand("UPDATE \"Worker\" SET \"FirstName\" = @FirstName, \"LastName\" = @LastName, \"Gender\" = @Gender WHERE \"Id\" = @Id", connection))
+                    using (NpgsqlCommand updateCommand = new NpgsqlCommand("UPDATE \"Worker\" SET \"FirstName\" = @FirstName, \"LastName\" = @LastName, \"Gender\" = @Gender, \"JobId\" = @JobId WHERE \"Id\" = @Id", connection))
                     {
                         updateCommand.Parameters.AddWithValue("@FirstName", worker.FirstName);
                         updateCommand.Parameters.AddWithValue("@LastName", worker.LastName);
                         updateCommand.Parameters.AddWithValue("@Gender", worker.Gender);
-
-                        int rowsAffected = updateCommand.ExecuteNonQuery();
+                        updateCommand.Parameters.AddWithValue("@JobId", worker.Job.Id);
+                        updateCommand.Parameters.AddWithValue("@Id", id);
+                        int rowsAffected = await updateCommand.ExecuteNonQueryAsync();
 
                         if (rowsAffected > 0)
                         {
@@ -189,20 +201,19 @@ namespace Example.Repository
             }
         }
 
-        // DELETE api/worker/5
-        public bool Delete(Guid id)
+        public async Task<bool> DeleteAsync(Guid id)
         {
             try
             {
                 using (NpgsqlConnection connection = new NpgsqlConnection("Host=localhost;Port=5432;Username=postgres;Password=student1;Database=workerDB"))
                 {
-                    connection.Open();
+                    await connection.OpenAsync();
 
                     using (NpgsqlCommand command = new NpgsqlCommand("DELETE FROM \"Worker\" WHERE \"Id\" = @Id", connection))
                     {
                         command.Parameters.AddWithValue("@Id", id);
 
-                        int rowsAffected = command.ExecuteNonQuery();
+                        int rowsAffected = await command.ExecuteNonQueryAsync();
 
                         if (rowsAffected > 0)
                         {
@@ -225,29 +236,28 @@ namespace Example.Repository
             }
         }
 
-        // PUT api/worker/setjob/5
-        public bool SetJob(Guid workerId, Guid jobId)
+        public async Task<bool> SetJobAsync(Guid workerId, Guid jobId)
         {
             try
             {
                 using (NpgsqlConnection connection = new NpgsqlConnection("Host=localhost;Port=5432;Username=postgres;Password=student1;Database=workerDB"))
                 {
-                    connection.Open();
+                    await connection.OpenAsync();
 
                     using (NpgsqlCommand command = new NpgsqlCommand("UPDATE \"Worker\" SET \"JobId\" = @JobId WHERE \"Id\" = @WorkerId", connection))
                     {
                         command.Parameters.AddWithValue("@JobId", jobId);
                         command.Parameters.AddWithValue("@WorkerId", workerId);
 
-                        int rowsAffected = command.ExecuteNonQuery();
+                        int rowsAffected = await command.ExecuteNonQueryAsync();
 
                         if (rowsAffected > 0)
                         {
-                            return  true;
+                            return true;
                         }
                         else
                         {
-                            return  false;
+                            return false;
                         }
                     }
                 }
@@ -262,24 +272,33 @@ namespace Example.Repository
             }
         }
 
-        List<IWorkerModel> IWorkerRepository.GetWorkers()
+        // Dodajte funkciju za dohvaćanje posla
+        private async Task<IJobModel> GetJobAsync(Guid jobId)
         {
-            throw new NotImplementedException();
-        }
+            using (NpgsqlConnection connection = new NpgsqlConnection("Host=localhost;Port=5432;Username=postgres;Password=student1;Database=workerDB"))
+            {
+                await connection.OpenAsync();
 
-        IWorkerModel IWorkerRepository.GetWorker(Guid id)
-        {
-            throw new NotImplementedException();
-        }
+                using (NpgsqlCommand command = new NpgsqlCommand("SELECT * FROM \"Job\" WHERE \"Id\" = @JobId", connection))
+                {
+                    command.Parameters.AddWithValue("@JobId", jobId);
 
-        public bool Post(IWorkerModel worker)
-        {
-            throw new NotImplementedException();
-        }
-
-        public bool Put(Guid id, IWorkerModel worker)
-        {
-            throw new NotImplementedException();
+                    using (NpgsqlDataReader reader = await command.ExecuteReaderAsync())
+                    {
+                        if (await reader.ReadAsync())
+                        {
+                            IJobModel job = new JobModel()
+                            {
+                                Id = reader.GetGuid(0),
+                                Salary = reader.GetInt32(1),
+                                Type = reader.GetString(2)
+                            };
+                            return job;
+                        }
+                    }
+                }
+            }
+            return null;
         }
     }
 }

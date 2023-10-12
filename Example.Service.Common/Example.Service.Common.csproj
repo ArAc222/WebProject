@@ -98,6 +98,10 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Example.Model.Common\Example.Model.Common.csproj">
+      <Project>{7F098CB8-3815-477A-94E1-CCA33BC4D431}</Project>
+      <Name>Example.Model.Common</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Example.Model\Example.Model.csproj">
       <Project>{1d7247db-6da3-40e6-a224-fd04cfbf76aa}</Project>
       <Name>Example.Model</Name>
